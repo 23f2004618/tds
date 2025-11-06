@@ -1,0 +1,33 @@
+name: QA Sum Scraper – 23f2004618@ds.study.iitm.ac.in
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run scraper and print total
+        run: npm run scrape
+
+      - name: Use PAT to demonstrate access (no-op)
+        if: ${{ env.MY_PAT != '' }}
+        env:
+          MY_PAT: ${{ secrets.MY_PAT }}
+        run: echo "PAT is configured in secrets and available to workflow."
